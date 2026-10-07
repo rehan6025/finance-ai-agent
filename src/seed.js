@@ -26,7 +26,8 @@ db.exec(`
         userId INTEGER NOT NULL,
         category TEXT CHECK(category in ('food','travel','shopping','bills')),
         monthlyLimit INTEGER ,
-        month TEXT 
+        month TEXT,
+        UNIQUE(userId, category, month)
     );
 
     `);
@@ -68,12 +69,13 @@ const insertMany = db.transaction(() => {
         const merchantList = merchants[category];
         const merchant = merchantList[Math.floor(Math.random() * merchantList.length)];
 
-        const amount = Math.floor(Math.random() * 2000) + 100;
+        const amount = Math.floor(Math.random() * 600) + 100;
 
-        const month = i % 2 === 0 ? 10 : 9;
-        const day = (i % 28) + 1;
+        const month = String(i % 2 === 0 ? 10 : 9).padStart(2, "0");
+        const day = String((i % 28) + 1).padStart(2, "0");
 
-        const date = "2026-" + month + "-" + day;
+        const date = `2026-${month}-${day}`;
+
 
         insertTransaction.run(i, 1, amount, "debit", category, merchant, date);
     }
